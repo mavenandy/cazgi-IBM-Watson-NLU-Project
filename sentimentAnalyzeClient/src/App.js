@@ -5,11 +5,12 @@ import React from 'react';
 import axios from 'axios';
 
 class App extends React.Component {
-  state = {innercomp:<textarea rows="4" cols="50" id="textinput"/>,
-            mode: "text",
-          sentimentOutput:[],
-          sentiment:true
-        }
+  state = {
+    innercomp:<textarea rows="4" cols="50" id="textinput"/>,
+    mode: "text",
+    sentimentOutput:[],
+    sentiment:true
+  }
   
   renderTextArea = ()=>{
     document.getElementById("textinput").value = "";
@@ -73,7 +74,9 @@ class App extends React.Component {
     ret = axios.get(url);
 
     ret.then((response)=>{
+      if (typeof response.data == 'object')
       this.setState({sentimentOutput:<EmotionTable emotions={response.data}/>});
+      else this.setState({ sentimentOutput: response.data });
   });
   }
   
