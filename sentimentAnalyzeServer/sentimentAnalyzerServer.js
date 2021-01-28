@@ -2,6 +2,8 @@ const express = require('express');
 const dotenv = require('dotenv');
 dotenv.config();
 
+const app = new express();
+
 function getNLUInstance() {
     let api_key = process.env.API_KEY;
     let api_url = process.env.API_URL;
@@ -16,14 +18,8 @@ function getNLUInstance() {
         }),
         serviceUrl: api_url,
     });
-
     return naturalLanguageUnderstanding;
 }
-
-const app = new express();
-
-// new
-const NLUObject = new getNLUInstance();
 
 app.use(express.static('client'))
 
@@ -34,33 +30,63 @@ app.get("/",(req,res)=>{
     res.render('index.html');
 });
 
-app.get("/url/emotion", (req,res) => {
 
+app.get("/url/emotion", (req,res) => {
     return res.send({"happy":"90","sad":"10"});
 });
 
 app.get("/url/sentiment", (req,res) => {
-    return res.send("url sentiment for "+req.query.url);
+    // return res.send("url sentiment for "+req.query.url);
+    let params = {
+        'url': req.query.url,
+        'features': {
+            'sentiment': {
+                'document': true,
+            },
+        }
+    }
 });
 
 app.get("/text/emotion", (req,res) => {
-    return res.send({"happy":"10","sad":"90"});
-
-    // naturalLanguageUnderstanding.analyze(analyzeParams)
-    // .then(analysisResults => {
-    //     console.log(JSON.stringify(analysisResults, null, 2));
-    // })
-    // .catch(err => {
-    //     console.log('error:', err);
-    // });
+    let params = {
+        'text': req.query.text,
+        'features': {
+            'emotion': {
+                'document': true,
+            }
+        }
+    }
+    getNLUInstance().analyze(params)
+        .then(analysisResults => {
+            console.log(analysisResults);
+            const emotion = analysisResults.result.emotion.document.emotion;
+            return res.send(emotion)
+        })
+        .catch(err => {
+            console.error("Error:", err);
+        })
 });
 
 app.get("/text/sentiment", (req,res) => {
-    return res.send("text sentiment for "+req.query.text);
-
+    let params = {
+        'text': req.query.text,
+        'features': {
+            'sentiment': {
+                'document': true,
+            },
+        }
+    }
+    getNLUInstance().analyze(params)
+        .then(analysisResults => {
+            console.log(analysisResults);
+            const sentiment = analysisResults.result.sentiment.document.label;
+            return res.send(sentiment)
+        })
+        .catch(err => {
+            console.error("Error:", err);
+        })
 });
 
 let server = app.listen(8080, () => {
     console.log('Listening', server.address().port)
 })
-
