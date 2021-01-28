@@ -32,7 +32,24 @@ app.get("/",(req,res)=>{
 
 
 app.get("/url/emotion", (req,res) => {
-    return res.send({"happy":"90","sad":"10"});
+    // return res.send({"happy":"90","sad":"10"});
+    let params = {
+        'url': req.query.url,
+        'features': {
+            'emotion': {
+                'document': true,
+            }
+        }
+    }
+    getNLUInstance().analyze(params)
+        .then(analysisResults => {
+            console.log(analysisResults);
+            const emotion = analysisResults.result.emotion.document.label;
+            return res.send(emotion)
+        })
+        .catch(err => {
+            console.error("Error:", err);
+        })
 });
 
 app.get("/url/sentiment", (req,res) => {
@@ -42,9 +59,18 @@ app.get("/url/sentiment", (req,res) => {
         'features': {
             'sentiment': {
                 'document': true,
-            },
+            }
         }
     }
+    getNLUInstance().analyze(params)
+        .then(analysisResults => {
+            console.log(analysisResults);
+            const sentiment = analysisResults.result.sentiment.document.label;
+            return res.send(sentiment)
+        })
+        .catch(err => {
+            console.error("Error:", err);
+        })
 });
 
 app.get("/text/emotion", (req,res) => {
@@ -73,7 +99,7 @@ app.get("/text/sentiment", (req,res) => {
         'features': {
             'sentiment': {
                 'document': true,
-            },
+            }
         }
     }
     getNLUInstance().analyze(params)
