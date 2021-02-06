@@ -6,7 +6,7 @@ import axios from 'axios';
 
 class App extends React.Component {
   state = {
-    innercomp:<textarea rows="4" cols="50" id="textinput"/>,
+    innercomp:<textarea rows="4" className="container-fluid" id="textinput"/>,
     mode: "text",
     sentimentOutput:[],
     sentiment:true
@@ -15,7 +15,7 @@ class App extends React.Component {
   renderTextArea = ()=>{
     document.getElementById("textinput").value = "";
     if(this.state.mode === "url") {
-      this.setState({innercomp:<textarea rows="4" cols="50" id="textinput"/>,
+      this.setState({innercomp:<textarea rows="4" className="container-fluid" id="textinput"/>,
       mode: "text",
       sentimentOutput:[],
       sentiment:true
@@ -26,7 +26,7 @@ class App extends React.Component {
   renderTextBox = ()=>{
     document.getElementById("textinput").value = "";
     if(this.state.mode === "text") {
-      this.setState({innercomp:<textarea rows="1" cols="50" id="textinput"/>,
+      this.setState({innercomp:<textarea rows="1" className="container-fluid" id="textinput"/>,
       mode: "url",
       sentimentOutput:[],
       sentiment:true
@@ -47,7 +47,7 @@ class App extends React.Component {
     ret = axios.get(url);
     ret.then((response)=>{
 
-      this.setState({sentimentOutput:response.data});
+      // this.setState({sentimentOutput:response.data});
       let output = response.data;
       
       if(response.data === "positive") {
@@ -80,16 +80,21 @@ class App extends React.Component {
 
   render() {
     return (  
-      <div className="App">
-      <button className="btn btn-info" onClick={this.renderTextArea}>Text</button>
-        <button className="btn btn-dark"  onClick={this.renderTextBox}>URL</button>
-        <br/><br/>
-        {this.state.innercomp}
-        <br/>
-        <button className="btn-primary" onClick={this.sendForSentimentAnalysis}>Analyze Sentiment</button>
-        <button className="btn-primary" onClick={this.sendForEmotionAnalysis}>Analyze Emotion</button>
-        <br/>
-            {this.state.sentimentOutput}
+      <div className="App container">
+        <div className="row justify-content-center">
+          <div className="col-md-auto">
+            <div className="btn-group" role="group">
+                <button className="btn btn-primary btn-info" onClick={this.renderTextArea}>Text</button>
+                <button className="btn btn-primary btn-dark" onClick={this.renderTextBox}>URL</button>
+            </div>
+            {this.state.innercomp}
+            <div className="btn-group" role="group">
+              <button className="btn btn-primary btn-lg" onClick={this.sendForSentimentAnalysis}>Analyze Sentiment</button>
+              <button className="btn btn-primary btn-lg" onClick={this.sendForEmotionAnalysis}>Analyze Emotion</button>
+            </div>
+              {this.state.sentimentOutput}
+          </div>
+        </div>
       </div>
     );
     }
